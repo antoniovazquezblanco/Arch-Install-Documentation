@@ -1,4 +1,4 @@
-# Archlinux Virtualbox setup
+# Archlinux Virtualbox Guest setup
 
 I commonly use the machine via SSH in a graphical detached state.
 
