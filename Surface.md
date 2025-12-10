@@ -168,6 +168,7 @@ pacman -Sy --noconfirm
 # Enable desired services
 systemctl enable gdm
 systemctl enable NetworkManager
+systemctl enable bluetooth
 
 # Install the AUR helper
 cd /tmp
