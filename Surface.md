@@ -4,37 +4,9 @@ Surface devices are not very well supported. It is advisable to be up to date by
 
 - <https://github.com/linux-surface/linux-surface/wiki/Installation-and-Setup>
 
-## Preparation
-
-1. Prepare an Archlinux boot USB (<https://wiki.archlinux.org/title/USB_flash_installation_medium>).
-2. Boot Windows and update all the firmwares if there are any pending updates.
-3. Power off the surface, press volume up + power, release power to boot into UEFI.
-4. Security > Change SecureBoot > Disable SecureBoot.
-5. Boot configuration > Enable boot from USB devices
-6. Swipe left on USB storage to boot from USB.
-
-## Installation
 
 ```bash
-# Keyboard locale
-loadkeys es
-
-# Configure wireless connection...
-echo '[General]'                        > /etc/iwd/main.conf
-echo 'EnableNetworkConfiguration=true' >> /etc/iwd/main.conf
-systemctl restart iwd
-iwctl --passphrase $passphrase station wlan0 connect $essid
-
-# Set a password and start ssh
-passwd
-systemctl start sshd
-ip a
-```
-
 ```bash
-# Connect to the machine
-ssh root@192.168.1.xxx
-
 # Sync time via NTP
 timedatectl
 

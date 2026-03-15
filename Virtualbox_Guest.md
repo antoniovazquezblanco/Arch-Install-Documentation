@@ -2,50 +2,6 @@
 
 I commonly use the machine via SSH in a graphical detached state.
 
-## Prepare the machine
-
-Create a VM with the following settings:
-
-```
-General
- ├─ Advanced
- │   ├─ Shared clipboard: Bidirectional
- │   └─ Drag and drop: Bidirectional
- ├─ System
- │   ├─ Motherboard
- │   │   ├─ Base memory: As desired...
- │   │   ├─ Floppy: Disable
- │   │   └─ Enable EFI: Enable
- │   └─ Processor
- │       └─ Processors: As desired...
- ├─ Display
- │   └─ Screen
- │       ├─ Video memory: As desired...
- │       ├─ Graphics controller: VMSVGA
- │       └─ Enable 3D accel: Disable
- ├─ Network
- │   ├─ Adapter 1: Will be used for network access
- │   │   └─ Attached to: NAT
- │   └─ Adapter 2: Host only SSH access
- │       └─ Attached to: Host-only Adapter
- ├─ USB
- │   ├─ Enable USB: Enable
- │   └─ Mode: USB 3.0 xHCI
- └─ Shared Folders
-     └─ Add as desired with access full and automount.
-```
-
-## Target machine
-
-Boot instalation media in UEFI mode. Make minor configuration and bring ssh up...
-
-```bash
-loadkeys es
-passwd
-systemctl start sshd
-ip a
-```
-
 ## Host machine
 
 ```bash

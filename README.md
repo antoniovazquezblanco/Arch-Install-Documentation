@@ -4,7 +4,7 @@ My Archlinux install instructions, scripts and config files.
 
 Description of the different uses of my machines:
 * Surface: Gnome, disk encryption, secure boot.
-* Virtualbox Guest: I commonly use the machine via SSH in a graphical detached state.
+* Virtualbox Guest: Use via SSH in a graphical detached state.
 * X1 Carbon (3rd Gen): Gnome, disk encryption, secure boot.
 
 
@@ -35,7 +35,7 @@ Create a VM with the following settings:
 ```
 General
  ├─ Advanced
- │   ├─ Shared clipboard: Bidirectional
+│   ├─ Shared clipboard: Bidirectional
  │   └─ Drag and drop: Bidirectional
  ├─ System
  │   ├─ Motherboard
@@ -72,6 +72,39 @@ General
 4. Boot into Arch install medium.
 
 </details>
+
+
+## Initial target setup
+
+Common setup would be to setup a network connection and enable ssh.
+It is faster to copy commands to an ssh window than typing on the target.
+
+```bash
+# Set keyboard locale
+loadkeys es
+
+# (Optional) Configure wireless connection...
+echo '[General]'                        > /etc/iwd/main.conf
+echo 'EnableNetworkConfiguration=true' >> /etc/iwd/main.conf
+systemctl restart iwd
+iwctl --passphrase $passphrase station wlan0 connect $essid
+
+# Set a password and start ssh
+passwd
+systemctl start sshd
+ip a
+```
+
+
+## Setup
+
+Connect to the target machine via ssh.
+
+```bash
+ssh root@archiso
+```
+```
+```
 
 
 ## Specific instructions
