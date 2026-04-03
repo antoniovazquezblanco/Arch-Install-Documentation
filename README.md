@@ -3,8 +3,8 @@
 My Archlinux install instructions, scripts and config files.
 
 Description of the different uses of my machines:
-* Surface: Gnome, disk encryption, secure boot.
 * Virtualbox Guest: Use via SSH in a graphical detached state.
+* Surface: Gnome, disk encryption, secure boot.
 * X1 Carbon (3rd Gen): Gnome, disk encryption, secure boot.
 
 
@@ -16,16 +16,6 @@ You can either use the ISO or prepare a [boot USB](https://wiki.archlinux.org/ti
 
 ## Target preparation
 
-<details>
-<summary>Surface</summary>
-
-1. Boot Windows and update all the firmwares if there are any pending updates.
-2. Power off the surface, press volume up + power, release power to boot into UEFI.
-3. Security > Change SecureBoot > Disable SecureBoot.
-4. Boot configuration > Enable boot from USB devices.
-5. Swipe left on USB storage to boot from USB.
-
-</details>
 
 <details>
 <summary>Virtualbox Guest</summary>
@@ -60,6 +50,17 @@ General
  └─ Shared Folders
      └─ Add as desired with access full and automount.
 ```
+
+</details>
+
+<details>
+<summary>Surface</summary>
+
+1. Boot Windows and update all the firmwares if there are any pending updates.
+2. Power off the surface, press volume up + power, release power to boot into UEFI.
+3. Security > Change SecureBoot > Disable SecureBoot.
+4. Boot configuration > Enable boot from USB devices.
+5. Swipe left on USB storage to boot from USB.
 
 </details>
 
