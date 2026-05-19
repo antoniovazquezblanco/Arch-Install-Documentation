@@ -108,6 +108,31 @@ ssh root@archiso
 Start the setup process.
 
 ```bash
+# Configure your options...
+
+# Select a drive, lsblk command may help you
+DRIVE="/dev/sda"
+#DRIVE="/dev/nvme0n1"
+
+# Select a kernel
+KENRELNAME="linux"
+#KENRELNAME="linux-surface"
+
+# Select firmware packaes
+PKGFW="intel-ucode linux-firmware-intel"
+
+# Hostname
+#HOSTNAME="VirtualArch"
+#HOSTNAME="SurfaceArch"
+#HOSTNAME="X1Arch"
+HOSTNAME="VaultArch"
+
+# User
+USER="dummy"
+
+
+# Now installation begins...
+
 # Sync time via NTP
 timedatectl set-ntp true
 
@@ -121,10 +146,6 @@ echo ""                                             >> /etc/pacman.conf
 echo "[linux-surface]"                              >> /etc/pacman.conf
 echo "Server = https://pkg.surfacelinux.com/arch/"  >> /etc/pacman.conf
 pacman -Sy --noconfirm
-
-# Select a drive, lsblk command may help you
-DRIVE="/dev/sda"
-#DRIVE="/dev/nvme0n1"
 
 # Create partitions
 # boot - EFI partition 512MiB
@@ -156,15 +177,8 @@ mount -t btrfs -o subvol=@pkg,noatime,compress=zstd:1 LABEL=arch /mnt/var/cache/
 mount -t btrfs -o subvol=@.snapshots,noatime,compress=zstd:1 LABEL=arch /mnt/.snapshots
 mount LABEL=boot /mnt/boot
 
-# Select a kernel package
-PKGKERNEL="linux linux-headers"
-#PKGKERNEL="linux-surface linux-surface-headers"
-
-# Select firmware packaes
-PKGFW="intel-ucode linux-firmware-intel"
-
 # System package strapping
-pacstrap -K /mnt base ${PKGKERNEL} ${PKGFW} btrfs-progs sudo networkmanager wget usbutils less htop openssh
+pacstrap -K /mnt base ${KENRELNAME} ${KENRELNAME}-headers ${PKGFW} btrfs-progs sudo networkmanager wget usbutils less htop openssh
 
 # Generate fstab
 genfstab -L -p /mnt >> /mnt/etc/fstab
@@ -192,16 +206,8 @@ echo "LC_TELEPHONE=es_ES.UTF-8" >> /etc/locale.conf
 echo "LC_TIME=es_ES.UTF-8" >> /etc/locale.conf
 
 # Set hostname
-#HOSTNAME="VirtualArch"
-#HOSTNAME="SurfaceArch"
-#HOSTNAME="X1Arch"
-HOSTNAME="VaultArch"
 echo "${HOSTNAME}" > /etc/hostname
 echo "127.0.0.1 ${HOSTNAME}.localdomain ${HOSTNAME}" >> /etc/hosts
-
-# Select a kernel name
-KENRELNAME="linux"
-#KENRELNAME="linux-surface"
 
 # Initramfs
 mkinitcpio -p ${KERNELNAME}
@@ -224,7 +230,6 @@ echo "initrd /initramfs-${KERNELNAME}-fallback.img" >> /boot/loader/entries/arch
 echo "options root=LABEL=arch rw rootflags=subvol=/@" >> /boot/loader/entries/arch.conf
 
 # User management
-USER="dummy"
 passwd
 useradd -m -G users,wheel,audio,video,input -s /usr/bin/zsh $USER
 passwd $USER
@@ -240,7 +245,7 @@ else
 fi
 rm /tmp/sudoers.bak
 
-# Add linux-surface repo
+# (Optional) Add linux-surface repo
 pacman -Sy --noconfirm archlinux-keyring
 curl -s https://raw.githubusercontent.com/linux-surface/linux-surface/master/pkg/keys/surface.asc | sudo pacman-key --add -
 sudo pacman-key --lsign-key 56C464BAAC421453
@@ -292,10 +297,3 @@ exit
 umount -R /mnt
 reboot
 ```
-
-
-## Specific instructions
-
-* [Virtualbox Guest](Virtualbox_Guest.md)
-* [Microsoft Surface](Surface.md)
-
