@@ -180,7 +180,7 @@ mount -t btrfs -o subvol=@.snapshots,noatime,compress=zstd:1 LABEL=arch /mnt/.sn
 mount LABEL=boot /mnt/boot
 
 # System package strapping
-pacstrap -K /mnt base ${KENRELNAME} ${KENRELNAME}-headers ${PKGFW} btrfs-progs sudo networkmanager wget usbutils less htop openssh
+pacstrap -K /mnt base ${KENRELNAME} ${KENRELNAME}-headers ${PKGFW} btrfs-progs sudo networkmanager wget usbutils less htop
 
 # Generate fstab
 genfstab -L -p /mnt >> /mnt/etc/fstab
@@ -264,6 +264,15 @@ systemctl enable bluetooth
 # Zsh
 pacman -S zsh zsh-completions grml-zsh-config
 chsh -s /usr/bin/zsh
+
+# SSH
+pacman -S openssh
+# Configure network
+# Set a fixed address in the host only adapter and mark as never use for routing
+sudo nmtui
+# Configure ssh
+echo "ListenAddress 192.168.56.102" >> /etc/ssh/sshd_config
+systemctl enable sshd
 
 # Development
 pacman -S base-devel vim neovim git 
