@@ -56,6 +56,8 @@ General
 <details>
 <summary>Surface</summary>
 
+Surface devices do not have a good upstreamed support. It is advisable to be up to date by following the linux-surface project: <https://github.com/linux-surface/linux-surface/wiki/Installation-and-Setup>.
+
 1. Boot Windows and update all the firmwares if there are any pending updates.
 2. Power off the surface, press volume up + power, release power to boot into UEFI.
 3. Security > Change SecureBoot > Disable SecureBoot.
@@ -281,7 +283,7 @@ cd ~
 rm -rf /tmp/pikaur
 
 # (Optional) Surface drivers
-pacstrap iptsd
+pacman -S iptsd
 pikaur -S libwacom-surface surface-control
 
 # (Optional) For VMs configure SSH daemon
