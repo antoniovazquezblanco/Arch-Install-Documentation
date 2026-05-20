@@ -70,9 +70,10 @@ Surface devices do not have a good upstreamed support. It is advisable to be up 
 <summary>X1 Carbon (3rd Gen)</summary>
 
 1. Reboot into BIOS by pressing F1.
-2. Disable Secure Boot.
-3. Reboot into Boot Menu by pressing F12.
-4. Boot into Arch install medium.
+2. Set UEFI boot mode.
+3. Enable secureboot and delete secureboot keys.
+4. Reboot into Boot Menu by pressing F12.
+5. Boot into Arch install medium.
 
 </details>
 
@@ -149,6 +150,11 @@ echo "[linux-surface]"                              >> /etc/pacman.conf
 echo "Server = https://pkg.surfacelinux.com/arch/"  >> /etc/pacman.conf
 pacman -Sy --noconfirm
 
+# (Optional) Secure wipe the drive
+cryptsetup open --type plain $DRIVE container --key-file /dev/urandom
+dd if=/dev/zero of=/dev/mapper/container status=progress bs=1M
+cryptsetup close container
+
 # Create partitions
 # boot - EFI partition 512MiB
 # arch - The remaining space
@@ -157,9 +163,15 @@ sgdisk --clear \
        --new=2:0:0       --typecode=2:8300 --change-name=2:arch \
        $DRIVE
 
-# Format partitions
+# Format boot partition
 mkfs.fat -F32 -n boot /dev/disk/by-partlabel/boot
+
+# Format OS partition without encryption
 mkfs.btrfs --label arch /dev/disk/by-partlabel/arch -f
+# Format OS partition with encryption
+cryptsetup luksFormat --align-payload=8192 -s 256 -c aes-xts-plain64 /dev/disk/by-partlabel/arch
+cryptsetup open /dev/disk/by-partlabel/arch arch
+mkfs.btrfs --label arch /dev/mapper/arch -f
 
 # Create subvolumes
 mount -t btrfs LABEL=arch /mnt
@@ -224,12 +236,19 @@ echo "title Arch Linux" > /boot/loader/entries/arch.conf
 echo "linux /vmlinuz-${KERNELNAME}" >> /boot/loader/entries/arch.conf
 echo "initrd /intel-ucode.img" >> /boot/loader/entries/arch.conf
 echo "initrd /initramfs-${KERNELNAME}.img" >> /boot/loader/entries/arch.conf
+# Without encryption
 echo "options root=LABEL=arch rw rootflags=subvol=/@" >> /boot/loader/entries/arch.conf
+# With encryption
+root_uuid="$(blkid -L arch -o export | grep -oP '^UUID=\K.+')"
+echo "options rd.luks.name=${root_uuid}=arch root=LABEL=arch rw rootflags=subvol=/@" >> /boot/loader/entries/arch.conf
 echo "title Arch Linux Fallback" > /boot/loader/entries/arch-fallback.conf
 echo "linux /vmlinuz-${KERNELNAME}" >> /boot/loader/entries/arch-fallback.conf
 echo "initrd /intel-ucode.img" >> /boot/loader/entries/arch.conf
 echo "initrd /initramfs-${KERNELNAME}-fallback.img" >> /boot/loader/entries/arch-fallback.conf
+# Without encryption
 echo "options root=LABEL=arch rw rootflags=subvol=/@" >> /boot/loader/entries/arch.conf
+# With encryption
+echo "options rd.luks.name=${root_uuid}=arch root=LABEL=arch rw rootflags=subvol=/@" >> /boot/loader/entries/arch.conf
 
 # User management
 passwd
@@ -257,13 +276,19 @@ echo "Server = https://pkg.surfacelinux.com/arch/"  >> /etc/pacman.conf
 pacman -Sy --noconfirm
 
 # Networking
-pacman -S networkmanager
+pacman -S networkmanager wpa_supplicant
 systemctl enable NetworkManager
 systemctl enable bluetooth
 
 # Zsh
 pacman -S zsh zsh-completions grml-zsh-config
 chsh -s /usr/bin/zsh
+
+# TPM and secureboot
+pacman -S tpm2-tools sbctl
+
+# Fingerprint reader
+pacman -S fprintd imagemagick
 
 # SSH
 pacman -S openssh
@@ -276,6 +301,9 @@ systemctl enable sshd
 
 # Development
 pacman -S base-devel vim neovim git 
+
+# Graphic drivers
+pacman -S mesa vulkan-intel
 
 # Desktop
 pacman -S gdm wayland gnome-shell gnome-calculator gnome-control-center gnome-disk-utility gnome-keyring gnome-logs gnome-settings-daemon gnome-system-monitor gnome-tweaks ghostty firefox 
